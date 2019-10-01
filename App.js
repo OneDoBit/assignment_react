@@ -31,7 +31,6 @@ const HomeNavigator = createBottomTabNavigator(
       },
     About: { screen: SettingsScreen,
       navigationOptions: {
-        activeTintColor: '#black',
         tabBarIcon: ({tintColor}) => <Ionicons name="ios-person" size={32} color={tintColor} />
         },
       },
