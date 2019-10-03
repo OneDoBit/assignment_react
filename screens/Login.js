@@ -1,17 +1,36 @@
 import React, { Component } from 'react';
-import { Image, TextInput, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {Easing, Animated, TextInput, StyleSheet, Text, NativeModules, Platform, View, TouchableOpacity } from 'react-native';
+
+const { UIManager } = NativeModules;
+if (Platform.OS === 'android') 
+{
+    if (UIManager.setLayoutAnimationEnabledExperimental) 
+    {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+}
 
 export default class LoginScreen extends Component {
 
+  first = new Animated.Value(0)
+
   state = { user: '', pass: undefined } 
 
+  componentDidMount()
+  {
+    Animated.timing(this.first,{
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+    }).start();
+  }
   render() {
     return (
       <View style={styles.container}>
 
-        <Image style={{width: 300, height: 300}} source={require('../assets/N-Logo.png')}/>
+        <Animated.Image style={{width: 300, height: 300, opacity:this.first}} source={require('../assets/N-Logo.png')}/>
 
-        <TextInput 
+        <TextInput //login creditentials
         onChangeText=
         {
           text => this.setState({user: text})
@@ -32,7 +51,7 @@ export default class LoginScreen extends Component {
         ></TextInput>
 
         <View style={styles.container2}>
-          <TouchableOpacity
+          <TouchableOpacity //a lot better to use this instead of button, since its more customizable
             style={styles.button}
             onPress=
             {

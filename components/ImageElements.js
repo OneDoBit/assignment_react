@@ -4,7 +4,7 @@ import {StyleSheet, Image} from 'react-native';
 export default class ImageElement extends React.Component {
     render() {
       return (
-            <Image source={this.props.imgsource} style={styles.image}></Image>
+            <Image source={this.props.imgsource} style={styles.image}></Image>//setting props for the images
       );
     }
 }

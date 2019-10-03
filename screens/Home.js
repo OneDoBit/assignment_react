@@ -1,15 +1,26 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View, Image, ScrollView, Dimensions, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Platform, NativeModules, Animated, StyleSheet, Text, View, ScrollView, Dimensions, Modal, TouchableWithoutFeedback } from 'react-native';
 import ImageElement from "../components/ImageElements"
 import { Ionicons } from '@expo/vector-icons';
 
+const { UIManager } = NativeModules;
+if (Platform.OS === 'android') 
+{
+    if (UIManager.setLayoutAnimationEnabledExperimental) 
+    {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+}
+
 class HomeScreen extends React.Component {
+
+  first = new Animated.Value(1)
 
   state = 
   {
     modalVisible: false,
     modalImage: require('../assets/N-Logo.png'),
-    images: 
+    images: //setting my images
     [
       require('../assets/SS10.jpg'),
       require('../assets/SS1.png'),
@@ -22,21 +33,43 @@ class HomeScreen extends React.Component {
 
   setModalVisible(visible, imageKey)
   {
-    this.setState({ modalImage: this.state.images[imageKey]});
-    this.setState({ modalVisible: visible})
+    this.setState({ modalImage: this.state.images[imageKey]});//saying where to set the state
+    this.setState({ modalVisible: visible})//activating modal
   }
+
+  componentDidMount()
+  {
+    Animated.timing(this.first, {
+      toValue: 0,
+      duration: 500
+  }).start(() => {
+      Animated.spring(this.first, {
+          toValue: 1,
+          speed: 0,
+          bounciness: 15
+      }).start()
+  });
+}
 
     render() {
 
-      let images = this.state.images.map((val, key) => {
+      let images = this.state.images.map((val, key) => {//TouchableWithoutFeedback is to clone a child
           return <TouchableWithoutFeedback key={key} onPress={() => {this.setModalVisible(true, key)}}>
-            <View style={styles.imagewrap}>
+            <Animated.View style={{...styles.imagewrap, transform: [{
+                translateX: this.first.interpolate({
+                    inputRange:[0,1],
+                    outputRange:[20,0]
+                })
+              }]
+            }}>
                   <ImageElement imgsource={val}></ImageElement>
-            </View>
+                  
+            </Animated.View>
           </TouchableWithoutFeedback>
+          //posting an image
       });
 
-      return (
+      return (//code to create the actual modal when the picture is being pressed
         <View style={styles.container}>
           <Modal style={styles.modal} animationType={'fade'} transparent={true} visible={this.state.modalVisible} onRequestClose={() => {}}>
             <View style={styles.modal}>
@@ -49,7 +82,7 @@ class HomeScreen extends React.Component {
           
 
           <ScrollView>
-            <Text style={styles.title}>My Work</Text>
+            <Text style={styles.title}>My Work!</Text>
             {images}
           </ScrollView>
 
